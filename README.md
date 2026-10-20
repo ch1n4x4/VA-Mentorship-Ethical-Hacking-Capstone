@@ -3,7 +3,6 @@
 ![Project Status](https://img.shields.io/badge/Status-Completed-success?style=flat-square)
 ![Environment](https://img.shields.io/badge/Platform-Kali%20Linux%20%7C%20DVWA%20%7C%20PortSwigger-blue?style=flat-square)
 ![Documentation](https://img.shields.io/badge/Docs-Case%20Study-orange?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
 
 > **Executive Summary:** This four-part offensive and defensive security capstone project demonstrates end-to-end vulnerability identification, exploitation, wireless traffic cryptanalysis, and secure code remediation. Across four distinct engagements, this project exploits an **Insecure Direct Object Reference (IDOR)** flaw in a live chat transcript endpoint using Burp Suite to uncover leaked credentials, analyzes an IEEE 802.11 **PCAP capture (`wpa.cap`)** in Wireshark and cracks its WPA 4-way handshake via an offline dictionary attack in Aircrack-ng, bypasses `mysqli_real_escape_string()` in **Damn Vulnerable Web Application (DVWA)** at the Medium security level using quote-less **SQL Injection (`1 OR 1=1`)**, and re-engineers the vulnerable PHP database layer into a hardened **Python (`sqlite3`) parameterized backend (`SQL_remediation.py`)** that neutralizes injection payloads at the protocol level.
 
