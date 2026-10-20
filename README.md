@@ -146,9 +146,25 @@ graph TD
 For environment configuration, dependency installation, and operational troubleshooting, consult the companion guides in this repository:
 
 ```text
-VA-Mentorship-project/
+VA-Mentorship-Ethical-Hacking-Capstone/
 ├── assets/
-│   ├── images/                                                 # All 22 step-by-step screenshots extracted from the report
+│   ├── images/                                                 # Step-by-step screenshots captured during the labs
+│   │   ├── Screenshot 2026-02-18 002334.png
+│   │   ├── Screenshot 2026-02-18 002704.png
+│   │   ├── Screenshot 2026-02-18 013122.png
+│   │   ├── Screenshot 2026-02-18 013203.png
+│   │   ├── Screenshot 2026-02-18 013226.png
+│   │   ├── Screenshot 2026-02-18 013406.png
+│   │   ├── Screenshot 2026-02-18 015043.png
+│   │   ├── Screenshot 2026-02-18 015500.png
+│   │   ├── Screenshot 2026-02-18 015846.png
+│   │   ├── Screenshot 2026-02-18 020140.png
+│   │   ├── Screenshot 2026-02-18 151153.png
+│   │   ├── Screenshot 2026-02-18 151251.png
+│   │   ├── Screenshot 2026-02-18 151321.png
+│   │   ├── Screenshot 2026-02-18 155443.png
+│   │   ├── Screenshot 2026-02-18 163409.png
+│   │   └── Screenshot 2026-02-18 163522.png
 │   └── CHINAZA_NNAMANI_VA_INITIATIVES_ETHICAL_HACKING_PROJECT.pdf  # Original 20-page PDF Capstone Documentation
 ├── SQL_remediation.py                                          # Hardened Python SQLite3 parameterized query module (Project 4)
 ├── setup.md                                                    # Complete lab setup & reproduction guide for Projects 1–4
@@ -174,10 +190,10 @@ VA-Mentorship-project/
 * **Authentication Status:** Logged out (Unauthenticated).
 * **Application Overview:** The target web application is an online retail store ("WE LIKE TO SHOP") featuring a **Home** page where products are listed with prices and ratings, a **My account** page where users can log in and view their account details, and a **Live chat** feature where users can chat with customer support ("Hal Pline") in real time.
 
-![PortSwigger IDOR Lab Home Page](./assets/images/page1_img1.png)
+![PortSwigger IDOR Lab Home Page](./assets/images/Screenshot%202026-02-18%20002704.png)
 *Figure 1: Target online retail store home page (`https://0aaa00cc04df2f8e83d138b2006600ee.web-security-academy.net/`) accessed in an unauthenticated state.*
 
-![PortSwigger IDOR Lab Login Page](./assets/images/page2_img1.png)
+![PortSwigger IDOR Lab Login Page](./assets/images/Screenshot%202026-02-18%20002334.png)
 *Figure 2: The "My account" Login page requiring a valid Username and Password.*
 
 #### 2. Initial Observed Behavior
@@ -187,7 +203,7 @@ During initial reconnaissance of the web application, the following behaviors we
 * The **Live chat** page includes a **View transcript** button that downloads the chat history transcript as a plain-text file (`.txt`).
 * Each downloaded transcript is named and stored serially (`3.txt`, `4.txt`, etc.).
 
-![Live Chat Interface and Serialized Transcript Downloads](./assets/images/page2_img2.png)
+![Live Chat Interface and Serialized Transcript Downloads](./assets/images/Screenshot%202026-02-18%20013226.png)
 *Figure 3: Interacting with the "Live chat" feature and observing sequential plain-text transcript filenames (`3.txt` and `4.txt`) in the browser downloads manager.*
 
 #### 3. Identifying the Vulnerability
@@ -195,7 +211,7 @@ While still unauthenticated, we captured the HTTP request triggered by clicking 
 * The captured `GET /download-transcript/4.txt HTTP/2` request reveals that chat transcripts are served directly from the `/download-transcript/` directory on the server.
 * Given the sequential integer naming convention (`3.txt`, `4.txt`), earlier chat transcripts created by other users (such as `1.txt` and `2.txt`) are likely stored in the same directory.
 
-![Burp Suite Repeater Capturing GET /download-transcript/4.txt](./assets/images/page3_img1.png)
+![Burp Suite Repeater Capturing GET /download-transcript/4.txt](./assets/images/Screenshot%202026-02-18%20013203.png)
 *Figure 4: Capturing the `GET /download-transcript/4.txt HTTP/2` request and inspecting the `HTTP/2 200 OK` plain-text attachment response in Burp Suite Repeater.*
 
 **What the Application is Doing Incorrectly:**
@@ -241,8 +257,11 @@ Hal Pline: Go one!
 
 </details>
 
-![Burp Suite Repeater Exploiting IDOR to Retrieve 1.txt and Leak Carlos Password](./assets/images/page4_img1.png)
+![Burp Suite Repeater Exploiting IDOR to Retrieve 1.txt and Leak Carlos Password](./assets/images/Screenshot%202026-02-18%20013122.png)
 *Figure 5: Modifying the request to `GET /download-transcript/1.txt HTTP/2` in Burp Suite Repeater, exposing another user's private chat transcript and leaking the password `uz6rp2rnyf0eyv52awL`.*
+
+![Post-Exploitation Verification Using Leaked Credentials](./assets/images/Screenshot%202026-02-18%20013406.png)
+*Figure 6: Post-exploitation verification using the leaked credentials from `1.txt`.*
 
 #### 5. Vulnerability Confirmation, Impact Assessment & Remediation Plan
 * **Why This Confirms the Vulnerability:** Changing the requested object from `4.txt` to `1.txt` (which belongs to another user and should be restricted) caused the server to return `HTTP/2 200 OK` with the private chat history of user **`carlos`** to an unauthenticated attacker.
@@ -269,33 +288,33 @@ We opened the wireless packet capture file (`wpa.cap`) in **Wireshark** to inspe
   * **Frame 6 (`t = 0.074633s`):** `Apple_eb:b0:8c` -> `Netgear_91:53:5d` | `EAPOL` | `303 bytes — Key (Message 3 of 4)`
   * **Frame 8 (`t = 0.075765s`):** `Netgear_91:53:5d` -> `Apple_eb:b0:8c` | `EAPOL` | `279 bytes — Key (Message 2 of 4 / Final Confirmation)`
 
-![Wireshark Unfiltered View of wpa.cap Showing 13 Packets](./assets/images/page6_img1.png)
-*Figure 6: Opening `wpa.cap` in Wireshark, showing the `SSID="test"` Beacon frame, 802.11 Acknowledgements, and EAPOL Key frames.*
+![Wireshark Unfiltered View of wpa.cap Showing 13 Packets](./assets/images/Screenshot%202026-02-18%20151251.png)
+*Figure 7: Opening `wpa.cap` in Wireshark, showing the `SSID="test"` Beacon frame, 802.11 Acknowledgements, and EAPOL Key frames.*
 
-![Wireshark Filtered by eapol Isolating the 4-Way WPA Handshake](./assets/images/page6_img2.png)
-*Figure 7: Applying the `eapol` display filter in Wireshark to confirm the 4-way WPA handshake between `Apple_eb:b0:8c` and `Netgear_91:53:5d`.*
+![Wireshark Filtered by eapol Isolating the 4-Way WPA Handshake](./assets/images/Screenshot%202026-02-18%20151321.png)
+*Figure 8: Applying the `eapol` display filter in Wireshark to confirm the 4-way WPA handshake between `Apple_eb:b0:8c` and `Netgear_91:53:5d`.*
 
 #### 2. Step-by-Step Wi-Fi Password Recovery (`aircrack-ng`)
 * **Recovered Wi-Fi Password:** **`biscotte`**
 
-![Aircrack-ng 1.7 Recovering the Wi-Fi Key biscotte](./assets/images/page7_img1.png)
-*Figure 8: Aircrack-ng v1.7 successfully cracking the WPA handshake in `wpa.cap` and returning `KEY FOUND! [ biscotte ]`.*
+![Aircrack-ng 1.7 Recovering the Wi-Fi Key biscotte](./assets/images/Screenshot%202026-02-18%20163522.png)
+*Figure 9: Aircrack-ng v1.7 successfully cracking the WPA handshake in `wpa.cap` and returning `KEY FOUND! [ biscotte ]`.*
 
 **Steps Taken to Recover the Password:**
 1. **Verify Handshake via CLI:** Ran `aircrack-ng wpa.cap` in the Kali Linux terminal (`~/Downloads`) to confirm Aircrack-ng recognized the target network (`#1 BSSID: 00:0D:93:EB:B0:8C`, `ESSID: test`, `Encryption: WPA (1 handshake)`).
 
-![Running aircrack-ng wpa.cap to Verify Handshake Detection](./assets/images/page8_img1.png)
-*Figure 9: Running `aircrack-ng wpa.cap` to confirm `WPA (1 handshake)` on BSSID `00:0D:93:EB:B0:8C` (`ESSID: test`) and inspecting available wordlists.*
+![Running aircrack-ng wpa.cap to Verify Handshake Detection](./assets/images/Screenshot%202026-02-18%20155443.png)
+*Figure 10: Running `aircrack-ng wpa.cap` to confirm `WPA (1 handshake)` on BSSID `00:0D:93:EB:B0:8C` (`ESSID: test`) and inspecting available wordlists.*
 
 2. **Acquire Wordlist from Aircrack-ng GitHub Repository:** Navigated to the official `aircrack-ng` GitHub repository (`https://github.com/aircrack-ng/aircrack-ng/blob/master/test/password.lst` — 2,294 lines compiled by Solar Designer) and saved the dictionary locally as `passwad.txt` using `nano passwad.txt`.
 
-![Cloning password.lst from the Official Aircrack-ng GitHub Repository](./assets/images/page8_img2.png)
-*Figure 10: Retrieving `aircrack-ng/test/password.lst` (compiled by Solar Designer) from the official Aircrack-ng GitHub repository.*
+![Cloning password.lst from the Official Aircrack-ng GitHub Repository](./assets/images/Screenshot%202026-02-18%20163409.png)
+*Figure 11: Retrieving `aircrack-ng/test/password.lst` (compiled by Solar Designer) from the official Aircrack-ng GitHub repository.*
 
 3. **Execute Offline Dictionary Attack:** Ran `aircrack-ng wpa.cap -w passwad.txt` to perform an offline dictionary attack against the captured handshake. Aircrack-ng tested `2,293/2,294` keys in `3 seconds` (`765.23 k/s`, `99.96%`) and recovered the key: **`KEY FOUND! [ biscotte ]`**.
 
-![Executing Offline Dictionary Attack with aircrack-ng wpa.cap -w passwad.txt](./assets/images/page9_img1.png)
-*Figure 11: Executing `aircrack-ng wpa.cap -w passwad.txt` and recovering the plaintext Wi-Fi passphrase `biscotte`.*
+![Executing Offline Dictionary Attack with aircrack-ng wpa.cap -w passwad.txt](./assets/images/Screenshot%202026-02-18%20163522.png)
+*Figure 12: Executing `aircrack-ng wpa.cap -w passwad.txt` and recovering the plaintext Wi-Fi passphrase `biscotte`.*
 
 <details>
 <summary><strong>Click to expand: Project 2 CLI Commands & Output</strong></summary>
@@ -340,22 +359,13 @@ We configured **Damn Vulnerable Web Application (DVWA)** at `http://localhost/DV
 * **Locale:** `en`
 * **SQLi DB:** `mysql`
 
-![DVWA SQL Injection Page at Medium Security Level](./assets/images/page11_img1.png)
-*Figure 12: DVWA SQL Injection vulnerability page (`http://localhost/DVWA/vulnerabilities/sqli/`) showing the `User ID` dropdown menu used at the Medium security level.*
-
-![DVWA Footer Confirming Security Level Medium and MySQL Backend](./assets/images/page11_img2.png)
-*Figure 13: Confirming `Security Level: medium` and `SQLi DB: mysql` in the DVWA configuration status bar.*
+![DVWA SQL Injection Configuration & Source Analysis](./assets/images/Screenshot%202026-02-18%20015043.png)
+*Figure 13: DVWA SQL Injection environment (`http://localhost/DVWA/vulnerabilities/sqli/`) configured at the Medium security level.*
 
 #### 2. Understanding the Defense: `Low` vs. `Medium` Source Code Analysis
 Inspecting the backend PHP source code via DVWA's **View Source** button revealed the exact difference between the `Low` and `Medium` security implementations:
 * **Low Security Level:** Takes `$_REQUEST['id']` directly from the user and concatenates it into the SQL query wrapped in single quotes (`WHERE user_id = '$id';`) without any sanitization or escaping.
 * **Medium Security Level:** Restricts the UI to a `POST` dropdown menu and passes `$_POST['id']` through `mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $id)`. However, in the SQL query itself, **`$id` is not wrapped in single quotes** (`WHERE user_id = $id;`).
-
-![DVWA Low Security Level PHP Source Code](./assets/images/page12_img1.png)
-*Figure 14: DVWA `Low` security PHP source code showing direct, unescaped string interpolation (`WHERE user_id = '$id';`).*
-
-![DVWA Medium Security Level PHP Source Code Showing mysqli_real_escape_string](./assets/images/page12_img2.png)
-*Figure 15: DVWA `Medium` security PHP source code showing `$id = mysqli_real_escape_string(...)` paired with an unquoted integer query (`WHERE user_id = $id;`).*
 
 <details>
 <summary><strong>Click to expand: Side-by-Side Vulnerable PHP Source Code (Low vs. Medium)</strong></summary>
@@ -392,8 +402,8 @@ if( isset( $_POST[ 'Submit' ] ) ) {
 #### 3. Exploitation: Discovery Phase & Bypassing `mysqli_real_escape_string()`
 1. **Intercepting the POST Request:** Because the Medium level replaces the text box with a hardcoded HTML `<select>` dropdown (`User ID: 1`), we used **Burp Suite Proxy** to intercept the `POST /DVWA/vulnerabilities/sqli/ HTTP/1.1` request containing the body parameter `id=1&Submit=Submit`.
 
-![Burp Suite Proxy Intercepting POST /DVWA/vulnerabilities/sqli/](./assets/images/page13_img1.png)
-*Figure 16: Intercepting the `POST /DVWA/vulnerabilities/sqli/ HTTP/1.1` request (`id=1&Submit=Submit`) in Burp Suite Proxy.*
+![Burp Suite Proxy Intercepting POST /DVWA/vulnerabilities/sqli/](./assets/images/Screenshot%202026-02-18%20015500.png)
+*Figure 14: Intercepting the `POST /DVWA/vulnerabilities/sqli/ HTTP/1.1` request (`id=1&Submit=Submit`) in Burp Suite.*
 
 2. **Testing Quote-Based Payloads (Failed Attempts):** We sent the request to **Burp Suite Repeater** and tested standard quote-based SQLi payloads on the `id` parameter:
    * `1'`
@@ -402,8 +412,8 @@ if( isset( $_POST[ 'Submit' ] ) ) {
    * `1' OR '1'='1`
    All quote-based payloads returned **`HTTP/1.1 500 Internal Server Error`** because `mysqli_real_escape_string()` prepended backslashes to the quotes (`1\'`), resulting in invalid SQL syntax (`WHERE user_id = 1\'`).
 
-![Burp Suite Repeater Showing HTTP 500 Internal Server Error on Quote Payload](./assets/images/page14_img1.png)
-*Figure 17: Testing `id=1'&Submit=Submit` in Burp Suite Repeater, resulting in `HTTP/1.1 500 Internal Server Error` due to `mysqli_real_escape_string()`.*
+![Burp Suite Testing SQLi Payloads Against DVWA Medium](./assets/images/Screenshot%202026-02-18%20015846.png)
+*Figure 15: Testing SQLi payloads in Burp Suite and analyzing the server response behavior when bypassing `mysqli_real_escape_string()`.*
 
 3. **Executing the Successful Bypass (`1 OR 1=1`):** Recognizing that `$id` is unquoted in `WHERE user_id = $id;`, we injected the quote-less boolean tautology payload **`1 OR 1=1`** (`id=1 OR 1=1&Submit=Submit`). Because the payload contains no quotes, `mysqli_real_escape_string()` had nothing to escape! The database executed:
    ```sql
@@ -411,17 +421,8 @@ if( isset( $_POST[ 'Submit' ] ) ) {
    ```
    This returned `HTTP/1.1 200 OK` and dumped every user record in the `users` table (`admin/admin`, `Gordon/Brown`, `Hack/Me`, `Pablo/Picasso`, `Bob/Smith`).
 
-![Burp Suite Repeater Returning HTTP 200 OK with id=1 OR 1=1](./assets/images/page15_img1.png)
-*Figure 18: Bypassing `mysqli_real_escape_string()` in Burp Suite Repeater with `id=1 OR 1=1&Submit=Submit`, returning `HTTP/1.1 200 OK`.*
-
-![Burp Suite Proxy Intercepting Request Before Browser Injection](./assets/images/page15_img2.png)
-*Figure 19: Intercepting a fresh `POST /DVWA/vulnerabilities/sqli/` request (`id=1&Submit=Submit`) in Burp Suite Proxy.*
-
-![Burp Suite Proxy Modifying Body to id=1 OR 1=1&Submit=Submit](./assets/images/page16_img1.png)
-*Figure 20: Modifying the intercepted POST body in Burp Suite Proxy to `id=1 OR 1=1&Submit=Submit` and forwarding to the browser.*
-
-![DVWA Browser Output Dumping All 5 Database Users](./assets/images/page16_img2.png)
-*Figure 21: DVWA web interface rendering all five user records (`admin`, `Gordon Brown`, `Hack Me`, `Pablo Picasso`, `Bob Smith`) following the `1 OR 1=1` injection.*
+![DVWA SQL Injection Successful Bypass and Database Dump](./assets/images/Screenshot%202026-02-18%20020140.png)
+*Figure 16: Successful SQL Injection bypass (`id=1 OR 1=1&Submit=Submit`) dumping all five user records (`admin`, `Gordon Brown`, `Hack Me`, `Pablo Picasso`, `Bob Smith`).*
 
 #### 4. Defense Analysis & Remediation Best Practices
 * **Why `mysqli_real_escape_string()` Failed:**
@@ -440,9 +441,6 @@ if( isset( $_POST[ 'Submit' ] ) ) {
 ### Project 4: Building a Secure Login / User Lookup Module
 
 Following the SQL Injection incident analysis in Project 3, we re-engineered the vulnerable PHP backend into a secure Python module ([`SQL_remediation.py`](./SQL_remediation.py)) using `sqlite3` parameterized queries.
-
-![Project 4 Specification for Replacing Vulnerable PHP with Secure Python Backend](./assets/images/page20_img1.png)
-*Figure 22: Specification for replacing the vulnerable `dvwaphp` backend function with a secure Python parameterized implementation.*
 
 #### 1. Complete Hardened Implementation (`SQL_remediation.py`)
 

@@ -32,6 +32,9 @@ This troubleshooting guide documents common failure modes, error codes, and oper
   2. Locate the `GET /download-transcript/4.txt` entry, right-click it, and select **Send to Repeater** (`Ctrl+R`).
   3. Alternatively, go to **Proxy** -> **Proxy settings** -> **Request interception rules** and uncheck exclusions for file extensions.
 
+![Locating GET /download-transcript/4.txt in Burp Suite Repeater](./assets/images/Screenshot%202026-02-18%20013203.png)
+*Figure 1: Inspecting `GET /download-transcript/4.txt` in Burp Suite Repeater after forwarding from HTTP history.*
+
 ---
 
 ## 2. Project 2 Troubleshooting: Wireshark EAPOL Filtering & Aircrack-ng
@@ -44,6 +47,9 @@ This troubleshooting guide documents common failure modes, error codes, and oper
   ```bash
   aircrack-ng wpa.cap -w passwad.txt
   ```
+
+![Aircrack-ng Prompting for Dictionary Option -w](./assets/images/Screenshot%202026-02-18%20155443.png)
+*Figure 2: Diagnostic screenshot showing `Please specify a dictionary (option -w)` when running `aircrack-ng wpa.cap` without `-w`.*
 
 ### Issue 2.2: `Passphrase not in dictionary` When Using an Incomplete or Corrupted Wordlist
 * **Symptom:** Aircrack-ng finishes testing all keys in the file and outputs `Passphrase not in dictionary`.
@@ -64,6 +70,9 @@ This troubleshooting guide documents common failure modes, error codes, and oper
 * **Root Cause:** Using an uppercase filter (such as `EAPOL` or `WPA`) in Wireshark's display filter bar throws a syntax error (red filter bar).
 * **Resolution:**
   Use the lowercase protocol filter `eapol` (filter bar turns green) to isolate Frames `2`, `4`, `6`, and `8`.
+
+![Wireshark Green Filter Bar Using Lowercase eapol Filter](./assets/images/Screenshot%202026-02-18%20151321.png)
+*Figure 3: Using the lowercase `eapol` display filter in Wireshark to isolate the 4-way handshake frames.*
 
 ---
 
